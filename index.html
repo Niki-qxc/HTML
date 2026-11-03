@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHELPIS 池安量子 - 商標提案申請表</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
+    }
+    input[type="text"], input[type="date"], textarea, select {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border: 1.5px solid #94a3b8 !important;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none !important;
+      border-color: #0284c7 !important;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2) !important;
+    }
+    .form-label {
+      color: #1e293b;
+      font-weight: 700;
+    }
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      #printArea {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 8mm !important;
+      }
+      .print-table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+        border: 2px solid #000000 !important;
+      }
+      .print-table th, .print-table td {
+        border: 1px solid #000000 !important;
+        padding: 5px 8px !important;
+        color: #000000 !important;
+        font-size: 11px !important;
+      }
+      .print-header-bg {
+        background-color: #f1f5f9 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-12">
+
+  <!-- 頂部標頭 (純前台，無任何後台按鈕) -->
+  <header class="no-print bg-slate-900 text-white shadow-lg sticky top-0 z-40 border-b border-slate-700">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="text-2xl font-black tracking-widest text-sky-400">CHELPIS</span>
+        <span class="text-xs bg-sky-500/20 text-sky-300 border border-sky-400/30 px-2 py-0.5 rounded font-medium">池安量子</span>
+        <div class="hidden md:block h-6 w-px bg-slate-700"></div>
+        <div class="hidden md:block text-xs text-slate-300">
+          <span class="font-bold text-white">池安量子資安股份有限公司</span> 商標提案申請系統
+        </div>
+      </div>
+      <div class="text-xs text-slate-400">
+        <i class="fa-solid fa-file-pen mr-1 text-sky-400"></i> 同仁提案申請專區
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8 no-print space-y-6">
+
+    <!-- 頂部說明 -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-black text-slate-900 flex items-center">
+          <span class="text-sky-600 mr-2">■</span> 商標提案申請表
+        </h1>
+        <p class="text-slate-600 text-sm mt-1">請提案同仁填寫商標資訊並完成手寫簽名。送出後系統會產生提案檔案與公文，以利移交法務審查。</p>
+      </div>
+      <div class="flex items-center space-x-3">
+        <button type="button" onclick="loadDraft()" class="px-3.5 py-2 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg text-sm font-semibold transition flex items-center space-x-1">
+          <i class="fa-solid fa-rotate-left"></i>
+          <span>讀取暫存</span>
+        </button>
+        <button type="button" onclick="saveDraft()" class="px-3.5 py-2 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg text-sm font-semibold transition flex items-center space-x-1">
+          <i class="fa-regular fa-bookmark"></i>
+          <span>暫存草稿</span>
+        </button>
+        <button type="button" onclick="printCurrentForm()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-sm font-semibold shadow transition flex items-center space-x-1.5">
+          <i class="fa-solid fa-print"></i>
+          <span>列印/預覽公文</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 申請表單 -->
+    <form id="proposalForm" onsubmit="handleFormSubmit(event)" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      
+      <div class="bg-slate-50 border-b border-slate-200 p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="form-label text-sm block mb-1">提案預擬案號：</label>
+          <div class="flex items-center space-x-2">
+            <input type="text" id="caseNo" placeholder="可填寫或由法務編號，例如 CIP-01" class="w-full bg-white font-mono font-bold text-sky-700 px-3.5 py-2 rounded-lg text-base">
+            <button type="button" onclick="autoGenerateCaseNo()" class="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-lg whitespace-nowrap">
+              自動流水號
+            </button>
+          </div>
+        </div>
+        <div>
+          <label class="form-label text-sm block mb-1">提案日期：</label>
+          <input type="date" id="proposalDate" required class="w-full px-3.5 py-2 rounded-lg text-sm">
+        </div>
+      </div>
+
+      <div class="p-6 md:p-8 space-y-6">
+
+        <!-- 單位提案人 / 部門別 / 單位主管 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div>
+            <label class="form-label text-sm block mb-1">單位提案人 <span class="text-rose-500">*</span></label>
+            <input type="text" id="proposerName" required placeholder="例如：張小明" class="w-full px-3.5 py-2 rounded-lg text-sm">
+          </div>
+          <div>
+            <label class="form-label text-sm block mb-1">部門別 <span class="text-rose-500">*</span></label>
+            <input type="text" id="department" required placeholder="例如：後量子研發部" class="w-full px-3.5 py-2 rounded-lg text-sm">
+          </div>
+          <div>
+            <label class="form-label text-sm block mb-1">單位主管 <span class="text-rose-500">*</span></label>
+            <input type="text" id="deptManager" required placeholder="例如：李主管" class="w-full px-3.5 py-2 rounded-lg text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label text-sm block mb-1">預計商標申請人 <span class="text-rose-500">*</span></label>
+          <input type="text" id="trademarkApplicant" value="池安量子資安股份有限公司" required class="w-full px-3.5 py-2 rounded-lg text-sm font-medium">
+        </div>
+
+        <div class="pt-4 border-t border-slate-200">
+          <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center">
+            <span class="w-2 h-5 bg-sky-600 rounded-sm mr-2.5"></span>提案說明（申請單位填寫）
+          </h2>
+
+          <div class="mb-5">
+            <label class="form-label text-sm block mb-1">商標名稱 <span class="text-rose-500">*</span></label>
+            <input type="text" id="trademarkName" required placeholder="請輸入欲申請之文字或商標識別名稱" class="w-full px-3.5 py-2 rounded-lg text-sm">
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+            <div class="md:col-span-2">
+              <label class="form-label text-sm block mb-1">
+                商標圖樣 <span class="text-slate-500 font-normal">(同意提供 .JPG 或 .PNG 等電子檔給法務)</span>
+              </label>
+              <input type="file" id="logoFileInput" accept="image/png, image/jpeg" onchange="handleImagePreview(event)" class="w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100 cursor-pointer">
+              
+              <div id="imagePreviewContainer" class="mt-3 p-4 border border-dashed border-slate-300 rounded-lg flex items-center justify-center bg-slate-50 min-h-[140px]">
+                <span id="previewPlaceholder" class="text-slate-400 text-sm">尚未上傳商標圖樣電子檔</span>
+                <img id="previewImg" class="max-h-36 max-w-full object-contain hidden" alt="商標圖樣預覽">
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label text-sm block mb-2">圖樣顏色 <span class="text-rose-500">*</span></label>
+              <div class="space-y-3 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <label class="flex items-center space-x-2.5 text-sm cursor-pointer">
+                  <input type="radio" name="colorOption" value="墨色" checked class="w-4 h-4 text-sky-600">
+                  <span class="text-slate-800 font-medium">墨色 (黑白)</span>
+                </label>
+                <label class="flex items-center space-x-2.5 text-sm cursor-pointer">
+                  <input type="radio" name="colorOption" value="彩色" class="w-4 h-4 text-sky-600">
+                  <span class="text-slate-800 font-medium">彩色</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-5">
+            <label class="form-label text-sm block mb-1">指定申請類別</label>
+            <input type="text" id="trademarkClasses" placeholder="例如：第 9 類、第 42 類" class="w-full px-3.5 py-2 rounded-lg text-sm">
+          </div>
+
+          <div class="mb-5">
+            <label class="form-label text-sm block mb-2">申請國別 <span class="text-rose-500">*</span></label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+              <label class="flex items-center space-x-2 p-2.5 bg-slate-50 rounded-lg border border-slate-200 cursor-pointer">
+                <input type="checkbox" name="countryOption" value="台灣" checked class="w-4 h-4 text-sky-600 rounded">
+                <span class="text-sm font-medium text-slate-800">台灣</span>
+              </label>
+              <label class="flex items-center space-x-2 p-2.5 bg-slate-50 rounded-lg border border-slate-200 cursor-pointer">
+                <input type="checkbox" name="countryOption" value="美國" class="w-4 h-4 text-sky-600 rounded">
+                <span class="text-sm font-medium text-slate-800">美國</span>
+              </label>
+              <label class="flex items-center space-x-2 p-2.5 bg-slate-50 rounded-lg border border-slate-200 cursor-pointer">
+                <input type="checkbox" name="countryOption" value="歐盟" class="w-4 h-4 text-sky-600 rounded">
+                <span class="text-sm font-medium text-slate-800">歐盟</span>
+              </label>
+              <label class="flex items-center space-x-2 p-2.5 bg-slate-50 rounded-lg border border-slate-200 cursor-pointer">
+                <input type="checkbox" name="countryOption" value="中國" class="w-4 h-4 text-sky-600 rounded">
+                <span class="text-sm font-medium text-slate-800">中國</span>
+              </label>
+              <label class="flex items-center space-x-2 p-2.5 bg-slate-50 rounded-lg border border-slate-200 cursor-pointer">
+                <input type="checkbox" name="countryOption" value="日本" class="w-4 h-4 text-sky-600 rounded">
+                <span class="text-sm font-medium text-slate-800">日本</span>
+              </label>
+              <label class="flex items-center space-x-2 p-2.5 bg-slate-50 rounded-lg border border-slate-200 cursor-pointer">
+                <input type="checkbox" name="countryOption" value="其他國家" class="w-4 h-4 text-sky-600 rounded">
+                <span class="text-sm font-medium text-slate-800">其他國家</span>
+              </label>
+            </div>
+            <input type="text" id="otherCountryInput" placeholder="若有其他國家請在此詳述說明" class="w-full mt-2 px-3.5 py-1.5 rounded-lg text-sm">
+          </div>
+
+          <div class="mb-5">
+            <label class="form-label text-sm block mb-1">應用產品 <span class="text-rose-500">*</span></label>
+            <textarea id="productApplications" rows="2" required placeholder="說明該商標將應用於哪些具體軟硬體產品、晶片或技術服務" class="w-full px-3.5 py-2 rounded-lg text-sm"></textarea>
+          </div>
+
+          <div class="mb-6">
+            <label class="form-label text-sm block mb-2">是否進行檢索 <span class="text-rose-500">*</span></label>
+            <div class="flex flex-wrap gap-4">
+              <label class="flex items-center space-x-2 cursor-pointer bg-slate-50 px-4 py-2 rounded-lg border border-slate-200">
+                <input type="radio" name="searchOption" value="內部檢索" checked class="w-4 h-4 text-sky-600">
+                <span class="text-sm font-medium text-slate-800">內部檢索</span>
+              </label>
+              <label class="flex items-center space-x-2 cursor-pointer bg-slate-50 px-4 py-2 rounded-lg border border-slate-200">
+                <input type="radio" name="searchOption" value="委外檢索" class="w-4 h-4 text-sky-600">
+                <span class="text-sm font-medium text-slate-800">委外檢索</span>
+              </label>
+              <label class="flex items-center space-x-2 cursor-pointer bg-slate-50 px-4 py-2 rounded-lg border border-slate-200">
+                <input type="radio" name="searchOption" value="兩者皆需" class="w-4 h-4 text-sky-600">
+                <span class="text-sm font-medium text-slate-800">兩者皆需</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 電子手寫簽名板 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-200">
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <div class="flex justify-between items-center mb-2">
+                <label class="form-label text-sm">提案人手寫簽名：<span class="text-rose-500">*</span></label>
+                <button type="button" onclick="clearSignature('canvasProposer')" class="text-xs text-rose-600 hover:text-rose-800 font-semibold">
+                  <i class="fa-solid fa-eraser"></i> 清除重簽
+                </button>
+              </div>
+              <div class="bg-white border-2 border-dashed border-slate-300 rounded-lg overflow-hidden">
+                <canvas id="canvasProposer" width="400" height="130" class="w-full cursor-crosshair touch-none"></canvas>
+              </div>
+              <p class="text-xs text-slate-500 mt-1.5 text-center">支援滑鼠拖曳或觸控筆跡</p>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <div class="flex justify-between items-center mb-2">
+                <label class="form-label text-sm">提案單位主管手寫簽名：<span class="text-rose-500">*</span></label>
+                <button type="button" onclick="clearSignature('canvasManager')" class="text-xs text-rose-600 hover:text-rose-800 font-semibold">
+                  <i class="fa-solid fa-eraser"></i> 清除重簽
+                </button>
+              </div>
+              <div class="bg-white border-2 border-dashed border-slate-300 rounded-lg overflow-hidden">
+                <canvas id="canvasManager" width="400" height="130" class="w-full cursor-crosshair touch-none"></canvas>
+              </div>
+              <p class="text-xs text-slate-500 mt-1.5 text-center">請由提案單位所屬主管簽名確認</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start space-x-3 text-amber-800 text-sm">
+          <i class="fa-solid fa-circle-info text-amber-600 mt-0.5"></i>
+          <div>
+            點擊「**送出提案並下載檔案**」後，系統會自動下載該案件的提案紀錄檔（`.cip`），並提供一鍵另存 PDF 公文，請將檔案傳送給池安法務進行後續審查。
+          </div>
+        </div>
+
+        <div class="pt-4 flex flex-col sm:flex-row justify-end items-center gap-3">
+          <button type="reset" onclick="resetForm()" class="w-full sm:w-auto px-6 py-2.5 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-lg transition text-sm">
+            重新填寫
+          </button>
+          <button type="submit" class="w-full sm:w-auto px-8 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg shadow-md transition text-sm flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-download"></i>
+            <span>送出提案並下載檔案 (.cip)</span>
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </main>
+
+  <!-- 正式 A4 公文列印區域 (平常隱藏，列印時顯示) -->
+  <div id="printArea" class="hidden">
+    <div style="text-align: center; margin-bottom: 10px;">
+      <h1 style="font-size: 19px; font-weight: bold; margin: 0; letter-spacing: 2px;">池安量子資安股份有限公司</h1>
+      <h2 style="font-size: 15px; font-weight: bold; margin: 3px 0 0 0; letter-spacing: 1px;">CHELPIS 商標提案申請表</h2>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; margin-bottom: 4px;">
+      <div>案號：<span id="pCaseNo"></span></div>
+      <div>提案日期：<span id="pProposalDate"></span></div>
+    </div>
+
+    <table class="print-table" style="width: 100%; border-collapse: collapse; border: 2px solid #000; font-size: 11px;">
+      <tbody>
+        <tr>
+          <td style="width: 15%; font-weight: bold;" class="print-header-bg">單位提案人</td>
+          <td style="width: 20%;" id="pProposer"></td>
+          <td style="width: 15%; font-weight: bold;" class="print-header-bg">部門別</td>
+          <td style="width: 20%;" id="pDept"></td>
+          <td style="width: 15%; font-weight: bold;" class="print-header-bg">單位主管</td>
+          <td style="width: 15%;" id="pManager"></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" class="print-header-bg">預計商標申請人</td>
+          <td colspan="5" id="pApplicant">池安量子資安股份有限公司</td>
+        </tr>
+        <tr>
+          <td colspan="6" style="text-align: center; font-weight: bold; letter-spacing: 1px;" class="print-header-bg">
+            提案說明（申請單位填寫）
+          </td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" class="print-header-bg">商標名稱</td>
+          <td colspan="5" id="pName" style="font-weight: bold; font-size: 13px;"></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" class="print-header-bg">
+            商標圖樣<br>
+            <span style="font-size: 9px; font-weight: normal;">(提供電子檔給法務)</span>
+          </td>
+          <td colspan="3" style="text-align: center; height: 95px; vertical-align: middle;">
+            <div id="pImgBox" style="display: flex; justify-content: center; align-items: center; height: 100%;"></div>
+          </td>
+          <td style="font-weight: bold;" class="print-header-bg">圖樣顏色</td>
+          <td id="pColor" style="vertical-align: middle;"></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" class="print-header-bg">指定申請類別</td>
+          <td colspan="5" id="pClasses"></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" class="print-header-bg">申請國別</td>
+          <td colspan="5" id="pCountries"></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" class="print-header-bg">應用產品</td>
+          <td colspan="5" id="pProducts" style="white-space: pre-wrap; height: 35px;"></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" class="print-header-bg">是否進行檢索</td>
+          <td colspan="5" id="pSearch"></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" class="print-header-bg">提案人<br>（簽名）</td>
+          <td colspan="2" style="height: 55px; vertical-align: middle; text-align: center;">
+            <div id="pSigProposer"></div>
+          </td>
+          <td style="font-weight: bold;" class="print-header-bg">提案單位主管<br>（簽名）</td>
+          <td colspan="2" style="height: 55px; vertical-align: middle; text-align: center;">
+            <div id="pSigManager"></div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6" style="text-align: center; font-weight: bold; letter-spacing: 1px;" class="print-header-bg">
+            內部評估（池安法務填寫）
+          </td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" class="print-header-bg">總部收件人</td>
+          <td colspan="2" id="pLegalReceiver"></td>
+          <td style="font-weight: bold;" class="print-header-bg">收件日</td>
+          <td colspan="2" id="pLegalDate"></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" class="print-header-bg">
+            各國報價情況<br>
+            <span style="font-size: 9px; font-weight: normal;">(代理人詢價進度)</span>
+          </td>
+          <td colspan="5" id="pQuoteStatus" style="height: 38px; vertical-align: top; white-space: pre-wrap;"></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" class="print-header-bg">
+            說明<br>
+            <span style="font-size: 9px; font-weight: normal;">(詢價後各國商標費用)</span>
+          </td>
+          <td colspan="5" id="pFeeExplanation" style="height: 38px; vertical-align: top; white-space: pre-wrap;"></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" class="print-header-bg">
+            法務初步意見<br>
+            <span style="font-size: 9px; font-weight: normal;">(含內/外部檢索)</span>
+          </td>
+          <td colspan="3" id="pLegalOpinion" style="height: 50px; vertical-align: top; white-space: pre-wrap;"></td>
+          <td style="font-weight: bold;" class="print-header-bg">法務審核<br>（簽名）</td>
+          <td style="vertical-align: middle; text-align: center;">
+            <div id="pSigLegal"></div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6" style="text-align: center; font-weight: bold; letter-spacing: 1px;" class="print-header-bg">
+            審核與核准
+          </td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" class="print-header-bg">審核部門</td>
+          <td colspan="5">財務會計人資行政部</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" class="print-header-bg">最高決策</td>
+          <td colspan="5" style="height: 60px; vertical-align: top;">
+            <div id="pDecisionText" style="margin-bottom: 5px; font-weight: bold;">□ 待決策簽核</div>
+            <div style="display: flex; justify-content: flex-end; align-items: center; padding-right: 15px;">
+              <span style="font-size: 11px; margin-right: 8px;">（決策簽名）：</span>
+              <div id="pSigDecision" style="display: inline-block;"></div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-top: 4px;">
+      <div>表單編號：CIP-IPR-FM-01-V1.0</div>
+      <div>機密等級：CHELPIS Internal Confidential</div>
+    </div>
+  </div>
+
+  <script>
+    let currentUploadedImageBase64 = null;
+
+    class SignaturePadHelper {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+        this.isDrawing = false;
+        this.hasDrawn = false;
+        this.init();
+      }
+      init() {
+        this.ctx.lineWidth = 2.5;
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+        this.ctx.strokeStyle = '#0f172a';
+
+        const start = (e) => {
+          this.isDrawing = true;
+          this.hasDrawn = true;
+          const pos = this.getPos(e);
+          this.ctx.beginPath();
+          this.ctx.moveTo(pos.x, pos.y);
+        };
+        const move = (e) => {
+          if (!this.isDrawing) return;
+          const pos = this.getPos(e);
+          this.ctx.lineTo(pos.x, pos.y);
+          this.ctx.stroke();
+        };
+        const stop = () => { this.isDrawing = false; };
+
+        this.canvas.addEventListener('mousedown', start);
+        this.canvas.addEventListener('mousemove', move);
+        window.addEventListener('mouseup', stop);
+
+        this.canvas.addEventListener('touchstart', (e) => { e.preventDefault(); start(e.touches[0]); });
+        this.canvas.addEventListener('touchmove', (e) => { e.preventDefault(); move(e.touches[0]); });
+        window.addEventListener('touchend', stop);
+      }
+      getPos(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        return {
+          x: (e.clientX - rect.left) * scaleX,
+          y: (e.clientY - rect.top) * scaleY
+        };
+      }
+      clear() {
+        if (!this.ctx) return;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.hasDrawn = false;
+      }
+      isEmpty() {
+        return !this.hasDrawn;
+      }
+      toDataURL() {
+        return this.hasDrawn ? this.canvas.toDataURL('image/png') : null;
+      }
+    }
+
+    let padProposer, padManager;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      padProposer = new SignaturePadHelper('canvasProposer');
+      padManager = new SignaturePadHelper('canvasManager');
+      document.getElementById('proposalDate').value = new Date().toISOString().split('T')[0];
+      autoGenerateCaseNo();
+    });
+
+    function autoGenerateCaseNo() {
+      const savedCount = parseInt(localStorage.getItem('CHELPIS_CIP_LOCAL_COUNT') || '0', 10);
+      const nextNum = (savedCount + 1).toString().padStart(2, '0');
+      document.getElementById('caseNo').value = `CIP-${nextNum}`;
+    }
+
+    function handleImagePreview(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentUploadedImageBase64 = e.target.result;
+          const img = document.getElementById('previewImg');
+          img.src = currentUploadedImageBase64;
+          img.classList.remove('hidden');
+          document.getElementById('previewPlaceholder').classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function clearSignature(canvasId) {
+      if (canvasId === 'canvasProposer' && padProposer) padProposer.clear();
+      if (canvasId === 'canvasManager' && padManager) padManager.clear();
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+
+      if (padProposer && padProposer.isEmpty()) {
+        alert('請在「提案人手寫簽名」板完成簽名！');
+        return;
+      }
+      if (padManager && padManager.isEmpty()) {
+        alert('請在「提案單位主管手寫簽名」板完成簽名！');
+        return;
+      }
+
+      const countries = Array.from(document.querySelectorAll("input[name='countryOption']:checked")).map(c => c.value);
+      if (countries.length === 0) {
+        alert('請至少勾選一個申請國別！');
+        return;
+      }
+
+      const caseNo = document.getElementById('caseNo').value || 'CIP-01';
+      const proposerName = document.getElementById('proposerName').value;
+      const trademarkName = document.getElementById('trademarkName').value;
+
+      const proposalData = {
+        id: 'CASE_' + Date.now(),
+        caseNo: caseNo,
+        proposalDate: document.getElementById('proposalDate').value,
+        proposerName: proposerName,
+        department: document.getElementById('department').value,
+        deptManager: document.getElementById('deptManager').value,
+        trademarkApplicant: document.getElementById('trademarkApplicant').value,
+        trademarkName: trademarkName,
+        logoImage: currentUploadedImageBase64,
+        colorOption: document.querySelector("input[name='colorOption']:checked") ? document.querySelector("input[name='colorOption']:checked").value : '墨色',
+        trademarkClasses: document.getElementById('trademarkClasses').value,
+        countries: countries,
+        otherCountry: document.getElementById('otherCountryInput').value,
+        productApplications: document.getElementById('productApplications').value,
+        searchOption: document.querySelector("input[name='searchOption']:checked") ? document.querySelector("input[name='searchOption']:checked").value : '內部檢索',
+        sigProposer: padProposer ? padProposer.toDataURL() : null,
+        sigManager: padManager ? padManager.toDataURL() : null,
+        status: '待法務評估',
+        legalReceiver: '',
+        legalReceiveDate: '',
+        quoteStatus: '',
+        feeExplanation: '',
+        legalOpinion: '',
+        sigLegal: null,
+        reviewDept: '財務會計人資行政部',
+        reviewDecision: '待決策簽核',
+        sigDecision: null,
+        createdAt: new Date().toISOString()
+      };
+
+      // 產生 .cip 案件檔並自動下載
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(proposalData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `${caseNo}_${proposerName}_商標提案.cip`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+
+      // 計數加 1
+      const savedCount = parseInt(localStorage.getItem('CHELPIS_CIP_LOCAL_COUNT') || '0', 10);
+      localStorage.setItem('CHELPIS_CIP_LOCAL_COUNT', (savedCount + 1).toString());
+
+      alert(`提案完成！已自動為您下載案件檔：\n【${caseNo}_${proposerName}_商標提案.cip】\n\n請將此下載檔案（或點擊列印另存的 PDF）傳送給池安法務進行審查！`);
+    }
+
+    function resetForm() {
+      document.getElementById('proposalForm').reset();
+      document.getElementById('proposalDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('trademarkApplicant').value = "池安量子資安股份有限公司";
+      document.getElementById('previewImg').classList.add('hidden');
+      document.getElementById('previewImg').src = '';
+      document.getElementById('previewPlaceholder').classList.remove('hidden');
+      currentUploadedImageBase64 = null;
+      if (padProposer) padProposer.clear();
+      if (padManager) padManager.clear();
+      autoGenerateCaseNo();
+    }
+
+    function saveDraft() {
+      const draft = {
+        caseNo: document.getElementById('caseNo').value,
+        proposerName: document.getElementById('proposerName').value,
+        department: document.getElementById('department').value,
+        deptManager: document.getElementById('deptManager').value,
+        trademarkName: document.getElementById('trademarkName').value,
+        trademarkClasses: document.getElementById('trademarkClasses').value,
+        productApplications: document.getElementById('productApplications').value
+      };
+      localStorage.setItem('CIP_PROPOSER_DRAFT', JSON.stringify(draft));
+      alert('草稿已暫存於您的瀏覽器！');
+    }
+
+    function loadDraft() {
+      const raw = localStorage.getItem('CIP_PROPOSER_DRAFT');
+      if (!raw) {
+        alert('目前無已暫存的草稿！');
+        return;
+      }
+      const draft = JSON.parse(raw);
+      if (draft.caseNo) document.getElementById('caseNo').value = draft.caseNo;
+      if (draft.proposerName) document.getElementById('proposerName').value = draft.proposerName;
+      if (draft.department) document.getElementById('department').value = draft.department;
+      if (draft.deptManager) document.getElementById('deptManager').value = draft.deptManager;
+      if (draft.trademarkName) document.getElementById('trademarkName').value = draft.trademarkName;
+      if (draft.trademarkClasses) document.getElementById('trademarkClasses').value = draft.trademarkClasses;
+      if (draft.productApplications) document.getElementById('productApplications').value = draft.productApplications;
+      alert('已帶入暫存草稿！');
+    }
+
+    function printCurrentForm() {
+      document.getElementById('pCaseNo').innerText = document.getElementById('caseNo').value || '';
+      document.getElementById('pProposalDate').innerText = document.getElementById('proposalDate').value || '';
+      document.getElementById('pProposer').innerText = document.getElementById('proposerName').value || '';
+      document.getElementById('pDept').innerText = document.getElementById('department').value || '';
+      document.getElementById('pManager').innerText = document.getElementById('deptManager').value || '';
+      document.getElementById('pApplicant').innerText = document.getElementById('trademarkApplicant').value || '池安量子資安股份有限公司';
+      document.getElementById('pName').innerText = document.getElementById('trademarkName').value || '';
+      document.getElementById('pColor').innerText = document.querySelector("input[name='colorOption']:checked") ? document.querySelector("input[name='colorOption']:checked").value : '墨色';
+      document.getElementById('pClasses').innerText = document.getElementById('trademarkClasses').value || '';
+      
+      const countries = Array.from(document.querySelectorAll("input[name='countryOption']:checked")).map(c => c.value);
+      const otherCountry = document.getElementById('otherCountryInput').value;
+      document.getElementById('pCountries').innerText = countries.join('、 ') + (otherCountry ? ` (${otherCountry})` : '');
+      document.getElementById('pProducts').innerText = document.getElementById('productApplications').value || '';
+      document.getElementById('pSearch').innerText = document.querySelector("input[name='searchOption']:checked") ? document.querySelector("input[name='searchOption']:checked").value : '內部檢索';
+
+      const pImgBox = document.getElementById('pImgBox');
+      pImgBox.innerHTML = currentUploadedImageBase64 ? `<img src="${currentUploadedImageBase64}" style="max-height: 85px; max-width: 100%; object-contain;">` : '<span style="color: #999;">(無商標圖樣)</span>';
+
+      const pProposerBox = document.getElementById('pSigProposer');
+      pProposerBox.innerHTML = (padProposer && !padProposer.isEmpty()) ? `<img src="${padProposer.toDataURL()}" style="max-height: 48px; max-width: 150px; object-contain;">` : '<span style="color:#aaa;">(未簽名)</span>';
+
+      const pManagerBox = document.getElementById('pSigManager');
+      pManagerBox.innerHTML = (padManager && !padManager.isEmpty()) ? `<img src="${padManager.toDataURL()}" style="max-height: 48px; max-width: 150px; object-contain;">` : '<span style="color:#aaa;">(未簽名)</span>';
+
+      window.print();
+    }
+  </script>
+</body>
+</html>
